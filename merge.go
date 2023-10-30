@@ -7,7 +7,7 @@ import (
 	"github.com/CycloneDX/cyclonedx-go"
 )
 
-func AddIfNewMap(input *[]cyclonedx.Dependency, prefix string) {
+func MergeMap(input *[]cyclonedx.Dependency, prefix string) {
 	if input != nil {
 
 		for _, item := range *input {
@@ -45,7 +45,7 @@ func AddIfNewMap(input *[]cyclonedx.Dependency, prefix string) {
 	}
 }
 
-func AddIfNew(items *[]cyclonedx.Component, input *[]cyclonedx.Component, prefix string) {
+func Merge(items *[]cyclonedx.Component, input *[]cyclonedx.Component, prefix string) {
 	if items != nil && input != nil {
 		for _, item := range *input {
 			item.BOMRef = fmt.Sprintf("%s%s", prefix, item.BOMRef)
@@ -55,7 +55,7 @@ func AddIfNew(items *[]cyclonedx.Component, input *[]cyclonedx.Component, prefix
 		}
 	}
 }
-func AddIfNewS(items *[]cyclonedx.Service, input *[]cyclonedx.Service, prefix string) {
+func MergeS(items *[]cyclonedx.Service, input *[]cyclonedx.Service, prefix string) {
 	if items != nil && input != nil {
 		for _, item := range *input {
 			item.BOMRef = fmt.Sprintf("%s%s", prefix, item.BOMRef)
@@ -65,7 +65,7 @@ func AddIfNewS(items *[]cyclonedx.Service, input *[]cyclonedx.Service, prefix st
 		}
 	}
 }
-func AddIfNewE(items *[]cyclonedx.ExternalReference, input *[]cyclonedx.ExternalReference, prefix string) {
+func MergeE(items *[]cyclonedx.ExternalReference, input *[]cyclonedx.ExternalReference, prefix string) {
 	if items != nil && input != nil {
 		for _, item := range *input {
 			if !HasE(items, &item) {
@@ -74,7 +74,7 @@ func AddIfNewE(items *[]cyclonedx.ExternalReference, input *[]cyclonedx.External
 		}
 	}
 }
-func AddIfNewC(items *[]cyclonedx.Composition, input *[]cyclonedx.Composition, prefix string) {
+func MergeC(items *[]cyclonedx.Composition, input *[]cyclonedx.Composition, prefix string) {
 	if items != nil && input != nil {
 		for _, item := range *input {
 			if !HasC(items, &item) {
@@ -83,18 +83,17 @@ func AddIfNewC(items *[]cyclonedx.Composition, input *[]cyclonedx.Composition, p
 		}
 	}
 }
-func AddIfNewP(items *[]cyclonedx.Property, input *[]cyclonedx.Property, prefix string) {
+func MergeP(items *[]cyclonedx.Property, input *[]cyclonedx.Property, prefix string) {
 	if items != nil && input != nil {
 		for _, item := range *input {
-			// TODO: NESTED
-			// item.BOMRef = fmt.Sprintf("%s%s", prefix, item.BOMRef)
+			item.Name = fmt.Sprintf("%s%s", prefix, item.Name)
 			if !HasP(items, &item) {
 				*items = append(*items, item)
 			}
 		}
 	}
 }
-func AddIfNewA(items *[]cyclonedx.Annotation, input *[]cyclonedx.Annotation, prefix string) {
+func MergeA(items *[]cyclonedx.Annotation, input *[]cyclonedx.Annotation, prefix string) {
 	if items != nil && input != nil {
 		for _, item := range *input {
 			item.BOMRef = fmt.Sprintf("%s%s", prefix, item.BOMRef)

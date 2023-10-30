@@ -34,7 +34,7 @@ func TestMergeComponents(t *testing.T) {
 		},
 	}
 
-	AddIfNew(&firstObject, &secondObject, "")
+	Merge(&firstObject, &secondObject, "")
 	assert.Equal(t, 2, len(firstObject))
 	assert.Equal(t, "A:1", firstObject[0].BOMRef)
 	assert.Equal(t, "A", firstObject[0].Name)
@@ -70,7 +70,7 @@ func TestMergeComponentsWithDifferentObjects(t *testing.T) {
 		},
 	}
 
-	AddIfNew(&firstObject, &secondObject, "")
+	Merge(&firstObject, &secondObject, "")
 	assert.Equal(t, 2, len(firstObject))
 	assert.Equal(t, "A:1", firstObject[0].BOMRef)
 	assert.Equal(t, "A", firstObject[0].Name)
@@ -107,7 +107,7 @@ func TestMergeComponentsNested(t *testing.T) {
 		},
 	}
 
-	AddIfNew(&firstObject, &secondObject, "X|")
+	Merge(&firstObject, &secondObject, "X|")
 	assert.Equal(t, 4, len(firstObject))
 	assert.Equal(t, "A:1", firstObject[0].BOMRef)
 	assert.Equal(t, "A", firstObject[0].Name)

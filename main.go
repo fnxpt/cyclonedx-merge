@@ -105,23 +105,23 @@ func mergeSBOM(value *cyclonedx.BOM) {
 				prefix = fmt.Sprintf("%s|", value.Metadata.Component.BOMRef)
 			}
 
-			AddIfNew(sbom.Components, &topComponents, "")
+			Merge(sbom.Components, &topComponents, "")
 			topDependencies = append(topDependencies, value.Metadata.Component.BOMRef)
 
 			if value.Metadata.Component.Components != nil {
-				AddIfNew(sbom.Components, value.Metadata.Component.Components, prefix)
+				Merge(sbom.Components, value.Metadata.Component.Components, prefix)
 			}
 		}
 	}
 
-	AddIfNew(sbom.Components, value.Components, prefix)
-	AddIfNewS(sbom.Services, value.Services, prefix)
-	AddIfNewE(sbom.ExternalReferences, value.ExternalReferences, prefix)
-	AddIfNewC(sbom.Compositions, value.Compositions, prefix)
-	AddIfNewP(sbom.Properties, value.Properties, prefix)
-	AddIfNewA(sbom.Annotations, value.Annotations, prefix)
+	Merge(sbom.Components, value.Components, prefix)
+	MergeS(sbom.Services, value.Services, prefix)
+	MergeE(sbom.ExternalReferences, value.ExternalReferences, prefix)
+	MergeC(sbom.Compositions, value.Compositions, prefix)
+	MergeP(sbom.Properties, value.Properties, prefix)
+	MergeA(sbom.Annotations, value.Annotations, prefix)
 
-	AddIfNewMap(value.Dependencies, prefix)
+	MergeMap(value.Dependencies, prefix)
 }
 
 func fillSBOM() {
