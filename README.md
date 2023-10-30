@@ -5,26 +5,13 @@ Tool to merge cyclonedx files
 
 If `ids` from both objects are the same we consider that the objects are equal and keep the first object.
 
-### Annotations
-
-Merge is performed if BomRef is the same on both objects
-
-### Compositions
-
-Merge is performed if BomRef is the same on both objects
-
-### ExternalReferences
-
-Merge is performed if url and type are the same on both objects
-
-### Properties
-
-Merge is performed if name is the same on both objects
-
-### Services
-
-Merge is performed if BomRef is the same on both objects
-
+|Type|Ids|Comment|
+|---|---|---|
+|Annotations|BomRef|   |
+|Compositions|BomRef|   |
+|ExternalReferences|URL & Type|   |
+|Properties|Name & Value|If different files have properties with the same name, its impossible to merge them|
+|Services|BomRef|   |
 
 ## Usage
 ```

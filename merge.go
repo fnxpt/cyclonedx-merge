@@ -156,7 +156,7 @@ func HasC(items *[]cyclonedx.Composition, input *cyclonedx.Composition) bool {
 func HasP(items *[]cyclonedx.Property, input *cyclonedx.Property) bool {
 	if items != nil {
 		for _, item := range *items {
-			if item.Name == input.Name {
+			if item.Name == input.Name && item.Value == input.Value {
 				return true
 			}
 		}
