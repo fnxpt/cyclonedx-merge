@@ -1,4 +1,4 @@
-package cyclonedxmerge
+package main
 
 import (
 	"fmt"
