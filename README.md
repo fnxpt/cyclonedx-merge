@@ -1,10 +1,30 @@
 # cyclonedx-merge
 Tool to merge cyclonedx files
 
-## Assumptions
+## Merge rules
 
-1. Whenever a bomref exists, we use it as an identifier, so if two seperate sbom's have the same id they will be merged
-2. When merging we consider that the objects are the same and we use the first object
+If `ids` from both objects are the same we consider that the objects are equal and keep the first object.
+
+### Annotations
+
+Merge is performed if BomRef is the same on both objects
+
+### Compositions
+
+Merge is performed if BomRef is the same on both objects
+
+### ExternalReferences
+
+Merge is performed if url and type are the same on both objects
+
+### Properties
+
+Merge is performed if name is the same on both objects
+
+### Services
+
+Merge is performed if BomRef is the same on both objects
+
 
 ## Usage
 ```
@@ -30,10 +50,10 @@ docker run -v `pwd`/sbom/:/sbom/ fnxpt/cyclonedx-merge:latest --dir /sbom/ > out
 ## TODO:
 
 - [ ] Add tests
-- [ ] Merge Annotations
-- [ ] Merge Compositions
-- [ ] Merge ExternalReferences
-- [ ] Merge Properties
-- [ ] Merge Services
+- [x] Merge Annotations
+- [x] Merge Compositions
+- [x] Merge ExternalReferences
+- [x] Merge Properties
+- [x] Merge Services
 - [ ] Make it generic
 - [ ] Clean code

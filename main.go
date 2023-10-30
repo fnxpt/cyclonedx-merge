@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"slices"
 	"strings"
 	"time"
 
@@ -106,24 +105,23 @@ func mergeSBOM(value *cyclonedx.BOM) {
 				prefix = fmt.Sprintf("%s|", value.Metadata.Component.BOMRef)
 			}
 
-			addIfNew(sbom.Components, &topComponents, "")
+			AddIfNew(sbom.Components, &topComponents, "")
 			topDependencies = append(topDependencies, value.Metadata.Component.BOMRef)
 
 			if value.Metadata.Component.Components != nil {
-				addIfNew(sbom.Components, value.Metadata.Component.Components, prefix)
+				AddIfNew(sbom.Components, value.Metadata.Component.Components, prefix)
 			}
 		}
 	}
 
-	addIfNew(sbom.Components, value.Components, prefix)
-	// addIfNew(sbom.Services, value.Services, prefix)
-	// addIfNew(sbom.ExternalReferences, value.ExternalReferences, prefix)
+	AddIfNew(sbom.Components, value.Components, prefix)
+	AddIfNewS(sbom.Services, value.Services, prefix)
+	AddIfNewE(sbom.ExternalReferences, value.ExternalReferences, prefix)
+	AddIfNewC(sbom.Compositions, value.Compositions, prefix)
+	AddIfNewP(sbom.Properties, value.Properties, prefix)
+	AddIfNewA(sbom.Annotations, value.Annotations, prefix)
 
-	addIfNewMap(value.Dependencies, prefix)
-	// addIfNew(sbom.Compositions, value.Compositions)
-	// addIfNew(sbom.Properties, value.Properties)
-	// addIfNew(sbom.Vulnerabilities, value.Vulnerabilities, prefix)
-	// addIfNew(sbom.Annotations, value.Annotations, prefix)
+	AddIfNewMap(value.Dependencies, prefix)
 }
 
 func fillSBOM() {
@@ -215,63 +213,3 @@ func dirMerge(value string) error {
 }
 
 var tmp = make(map[string]cyclonedx.Dependency)
-
-func addIfNewMap(input *[]cyclonedx.Dependency, prefix string) {
-	if input != nil {
-
-		for _, item := range *input {
-			key := item.Ref
-
-			if nested && prefix[:len(prefix)-1] != item.Ref {
-				key = fmt.Sprintf("%s%s", prefix, key)
-			}
-			if _, ok := tmp[key]; ok {
-				for _, dependency := range *item.Dependencies {
-					dependency = fmt.Sprintf("%s%s", prefix, dependency)
-					if !slices.Contains(*tmp[key].Dependencies, dependency) {
-						*tmp[item.Ref].Dependencies = append(*tmp[item.Ref].Dependencies, dependency)
-					}
-				}
-			} else {
-				item.Ref = key
-				//TODO: PREFIX DEPENDENCIES
-				if len(prefix) > 0 {
-					tmp[key] = cyclonedx.Dependency{
-						Ref:          key,
-						Dependencies: &[]string{},
-					}
-					if item.Dependencies != nil {
-						for _, dep := range *item.Dependencies {
-							dependency := fmt.Sprintf("%s%s", prefix, dep)
-							*tmp[key].Dependencies = append(*tmp[key].Dependencies, dependency)
-						}
-					}
-				} else {
-					tmp[key] = item
-				}
-			}
-		}
-	}
-}
-func addIfNew(items *[]cyclonedx.Component, input *[]cyclonedx.Component, prefix string) {
-	if items != nil && input != nil {
-		for _, item := range *input {
-			item.BOMRef = fmt.Sprintf("%s%s", prefix, item.BOMRef)
-			if !has(items, &item) {
-				*items = append(*items, item)
-			}
-		}
-	}
-}
-
-func has(items *[]cyclonedx.Component, input *cyclonedx.Component) bool {
-	if items != nil {
-		for _, item := range *items {
-			if item.BOMRef == input.BOMRef {
-				return true
-			}
-		}
-	}
-
-	return false
-}
