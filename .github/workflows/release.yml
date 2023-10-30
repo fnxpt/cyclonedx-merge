@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -20,20 +23,27 @@ jobs:
         with:
           push: true
           platforms: linux/arm64/v8,linux/amd64
-          tags: fnxpt/cyclonedx-merge:latest
+          tags: fnxpt/cyclonedx-merge:latest,fnxpt/cyclonedx-merge:${{ github.ref_name }}
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel: linux/386, linux/amd64, linux/arm64, windows/386, windows/amd64, darwin/amd64, darwin/arm64
+        goos: [linux, darwin]
+        goarch: [amd64, arm64]
     steps:
     - uses: actions/checkout@v3
-    - name: Generate build files
-      uses: thatisuday/go-cross-build@v1
+    - uses: actions/setup-go@v4
       with:
-          platforms: 'linux/amd64, linux/arm64, darwin/amd64, darwin/arm64, windows/amd64'
-          name: 'cyclonedx-merge'
-          compress: 'true'
-          dest: 'dist'
+        go-version: '^1.21.1' # The Go version to download (if necessary) and use.
+    - run: go build -o dist/cyclonedx-merge-${{ matrix.goos }}-${{ matrix.goarch }} .
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+
     - name: Release
       uses: fnkr/github-action-ghr@v1
       env:
-        GHR_PATH: dist/
+        GHR_COMPRESS: gz
+        GHR_PATH: dist/cyclonedx-merge-${{ matrix.goos }}-${{ matrix.goarch }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
