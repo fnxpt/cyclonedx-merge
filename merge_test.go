@@ -9,22 +9,24 @@ import (
 
 // TestMergeComponents
 func TestMergeComponents(t *testing.T) {
-	firstObject := []cyclonedx.Component{{
-		BOMRef:  "A:1",
-		Name:    "A",
-		Version: "1",
-	},
+	firstObject := []cyclonedx.Component{
+		{
+			BOMRef:  "A:1",
+			Name:    "A",
+			Version: "1",
+		},
 		{
 			BOMRef:  "B:2",
 			Name:    "B",
 			Version: "2",
 		},
 	}
-	secondObject := []cyclonedx.Component{{
-		BOMRef:  "A:1",
-		Name:    "A",
-		Version: "1",
-	},
+	secondObject := []cyclonedx.Component{
+		{
+			BOMRef:  "A:1",
+			Name:    "A",
+			Version: "1",
+		},
 		{
 			BOMRef:  "B:2",
 			Name:    "B",
@@ -43,22 +45,24 @@ func TestMergeComponents(t *testing.T) {
 }
 
 func TestMergeComponentsWithDifferentObjects(t *testing.T) {
-	firstObject := []cyclonedx.Component{{
-		BOMRef:  "A:1",
-		Name:    "A",
-		Version: "1",
-	},
+	firstObject := []cyclonedx.Component{
+		{
+			BOMRef:  "A:1",
+			Name:    "A",
+			Version: "1",
+		},
 		{
 			BOMRef:  "B:2",
 			Name:    "B",
 			Version: "2",
 		},
 	}
-	secondObject := []cyclonedx.Component{{
-		BOMRef:  "A:1",
-		Name:    "A",
-		Version: "1",
-	},
+	secondObject := []cyclonedx.Component{
+		{
+			BOMRef:  "A:1",
+			Name:    "A",
+			Version: "1",
+		},
 		{
 			BOMRef:  "B:2",
 			Name:    "B",
@@ -78,22 +82,24 @@ func TestMergeComponentsWithDifferentObjects(t *testing.T) {
 
 // TestMergeComponentsNested
 func TestMergeComponentsNested(t *testing.T) {
-	firstObject := []cyclonedx.Component{{
-		BOMRef:  "A:1",
-		Name:    "A",
-		Version: "1",
-	},
+	firstObject := []cyclonedx.Component{
+		{
+			BOMRef:  "A:1",
+			Name:    "A",
+			Version: "1",
+		},
 		{
 			BOMRef:  "B:2",
 			Name:    "B",
 			Version: "2",
 		},
 	}
-	secondObject := []cyclonedx.Component{{
-		BOMRef:  "A:1",
-		Name:    "A",
-		Version: "1",
-	},
+	secondObject := []cyclonedx.Component{
+		{
+			BOMRef:  "A:1",
+			Name:    "A",
+			Version: "1",
+		},
 		{
 			BOMRef:  "B:2",
 			Name:    "B",
