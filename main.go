@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cyclonedx-merge/merge"
 	"flag"
 	"fmt"
 	"io"
@@ -13,7 +14,6 @@ import (
 
 var version = "0.0.1"
 
-var nested = false
 var sbom *cyclonedx.BOM
 var outputFormat = cyclonedx.BOMFileFormatJSON
 var output = os.Stdout
@@ -36,7 +36,6 @@ func parseArguments() {
 		flag.PrintDefaults()
 	}
 
-	flag.BoolVar(&nested, "nested", false, "nested merge")
 	flag.Func("file", "merges file", fileMerge)
 	flag.Func("dir", "merges files in directory", dirMerge)
 	flag.Func("format", "output format - json/xml (default: json)", func(value string) error {
@@ -63,7 +62,6 @@ func parseArguments() {
 
 	fillSBOM()
 	flag.Parse()
-	postSBOM()
 	writeSBOM()
 }
 
@@ -88,40 +86,9 @@ func fileMerge(value string) error {
 		return err
 	}
 
-	mergeSBOM(bom)
+	merge.MergeSBOM(sbom, bom)
 
 	return nil
-}
-
-var topDependencies = make([]string, 0)
-
-func mergeSBOM(value *cyclonedx.BOM) {
-	var prefix string
-
-	if value.Metadata != nil {
-		if value.Metadata.Component != nil {
-			topComponents := []cyclonedx.Component{*value.Metadata.Component}
-			if nested {
-				prefix = fmt.Sprintf("%s|", value.Metadata.Component.BOMRef)
-			}
-
-			Merge(sbom.Components, &topComponents, "")
-			topDependencies = append(topDependencies, value.Metadata.Component.BOMRef)
-
-			if value.Metadata.Component.Components != nil {
-				Merge(sbom.Components, value.Metadata.Component.Components, prefix)
-			}
-		}
-	}
-
-	Merge(sbom.Components, value.Components, prefix)
-	MergeS(sbom.Services, value.Services, prefix)
-	MergeE(sbom.ExternalReferences, value.ExternalReferences, prefix)
-	MergeC(sbom.Compositions, value.Compositions, prefix)
-	MergeP(sbom.Properties, value.Properties, prefix)
-	MergeA(sbom.Annotations, value.Annotations, prefix)
-
-	MergeMap(value.Dependencies, prefix)
 }
 
 func fillSBOM() {
@@ -140,11 +107,15 @@ func fillSBOM() {
 			Type:   cyclonedx.ComponentTypeApplication,
 		},
 	}
+	sbom.Dependencies = &[]cyclonedx.Dependency{
+		{
+			Ref: "root",
+		},
+	}
 
 	annotations := make([]cyclonedx.Annotation, 0)
 	components := make([]cyclonedx.Component, 0)
 	compositions := make([]cyclonedx.Composition, 0)
-	dependencies := make([]cyclonedx.Dependency, 0)
 	externalReferences := make([]cyclonedx.ExternalReference, 0)
 	properties := make([]cyclonedx.Property, 0)
 	services := make([]cyclonedx.Service, 0)
@@ -153,7 +124,6 @@ func fillSBOM() {
 	sbom.Annotations = &annotations
 	sbom.Components = &components
 	sbom.Compositions = &compositions
-	sbom.Dependencies = &dependencies
 	sbom.ExternalReferences = &externalReferences
 	sbom.Properties = &properties
 	sbom.Services = &services
@@ -161,17 +131,6 @@ func fillSBOM() {
 
 }
 
-func postSBOM() {
-
-	for _, item := range tmp {
-		*sbom.Dependencies = append(*sbom.Dependencies, item)
-	}
-	*sbom.Dependencies = append(*sbom.Dependencies, cyclonedx.Dependency{
-		Ref:          "root",
-		Dependencies: &topDependencies,
-	})
-
-}
 func writeSBOM() {
 
 	encoder := cyclonedx.NewBOMEncoder(output, outputFormat)
@@ -211,5 +170,3 @@ func dirMerge(value string) error {
 
 	return nil
 }
-
-var tmp = make(map[string]cyclonedx.Dependency)

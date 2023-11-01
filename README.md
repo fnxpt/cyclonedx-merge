@@ -8,6 +8,7 @@ If `ids` from both objects are the same we consider that the objects are equal a
 |Type|Ids|Comment|
 |---|---|---|
 |Annotations|BomRef|   |
+|Components|BomRef|   |
 |Compositions|BomRef|   |
 |ExternalReferences|URL & Type|   |
 |Properties|Name & Value|If different files have properties with the same name, its impossible to merge them|
