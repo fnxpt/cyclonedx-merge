@@ -7,14 +7,13 @@ import (
 	"io"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/CycloneDX/cyclonedx-go"
 )
 
 var version = "0.0.1"
 
-var sbom *cyclonedx.BOM
+var sbom *cyclonedx.BOM = merge.NewBOM()
 var outputFormat = cyclonedx.BOMFileFormatJSON
 var output = os.Stdout
 
@@ -60,7 +59,6 @@ func parseArguments() {
 		return nil
 	})
 
-	fillSBOM()
 	flag.Parse()
 	writeSBOM()
 }
@@ -89,46 +87,6 @@ func fileMerge(value string) error {
 	merge.MergeSBOM(sbom, bom)
 
 	return nil
-}
-
-func fillSBOM() {
-
-	sbom = cyclonedx.NewBOM()
-	sbom.Metadata = &cyclonedx.Metadata{
-		Tools: &[]cyclonedx.Tool{{
-			Vendor:  "fnxpt",
-			Name:    "cyclonedx-merge",
-			Version: version,
-		}},
-		Timestamp: time.Now().String(), //TODO: RIGHT FORMAT
-		Component: &cyclonedx.Component{
-			BOMRef: "root",
-			Name:   "root",
-			Type:   cyclonedx.ComponentTypeApplication,
-		},
-	}
-	sbom.Dependencies = &[]cyclonedx.Dependency{
-		{
-			Ref: "root",
-		},
-	}
-
-	annotations := make([]cyclonedx.Annotation, 0)
-	components := make([]cyclonedx.Component, 0)
-	compositions := make([]cyclonedx.Composition, 0)
-	externalReferences := make([]cyclonedx.ExternalReference, 0)
-	properties := make([]cyclonedx.Property, 0)
-	services := make([]cyclonedx.Service, 0)
-	vulnerabilities := make([]cyclonedx.Vulnerability, 0)
-
-	sbom.Annotations = &annotations
-	sbom.Components = &components
-	sbom.Compositions = &compositions
-	sbom.ExternalReferences = &externalReferences
-	sbom.Properties = &properties
-	sbom.Services = &services
-	sbom.Vulnerabilities = &vulnerabilities
-
 }
 
 func writeSBOM() {
