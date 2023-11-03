@@ -1,11 +1,12 @@
 package merge
 
 import (
-	"cyclonedx-merge/utils"
 	"encoding/xml"
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/fnxpt/cyclonedx-merge/utils"
 
 	"github.com/CycloneDX/cyclonedx-go"
 	"github.com/stretchr/testify/assert"

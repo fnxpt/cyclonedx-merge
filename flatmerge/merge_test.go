@@ -1,9 +1,10 @@
 package flatmerge
 
 import (
-	"cyclonedx-merge/utils"
 	"encoding/xml"
 	"testing"
+
+	"github.com/fnxpt/cyclonedx-merge/utils"
 
 	cyclonedx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/stretchr/testify/assert"
