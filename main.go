@@ -1,14 +1,15 @@
 package main
 
 import (
-	"cyclonedx-merge/flatmerge"
-	"cyclonedx-merge/merge"
-	"cyclonedx-merge/utils"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+
+	"github.com/fnxpt/cyclonedx-merge/flatmerge"
+	"github.com/fnxpt/cyclonedx-merge/merge"
+	"github.com/fnxpt/cyclonedx-merge/utils"
 
 	"github.com/CycloneDX/cyclonedx-go"
 )

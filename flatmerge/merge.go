@@ -1,7 +1,7 @@
 package flatmerge
 
 import (
-	"cyclonedx-merge/utils"
+	"github.com/fnxpt/cyclonedx-merge/utils"
 
 	"github.com/CycloneDX/cyclonedx-go"
 )
