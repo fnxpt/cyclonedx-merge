@@ -57,8 +57,13 @@ Merged SBOM will have libA that depends on libB:1.0 and libC in main component o
 
 To be implemented
 
+## Install
 
-## Run
+```
+go install github.com/fnxpt/cyclonedx-merge@latest
+```
+
+## Run with docker
 
 ```
 docker run -v `pwd`/sbom/:/sbom/ fnxpt/cyclonedx-merge:latest --dir /sbom/ > output.json
