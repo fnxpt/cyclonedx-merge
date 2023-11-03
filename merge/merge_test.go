@@ -1,11 +1,11 @@
 package merge
 
 import (
-	"cyclonedx-merge/utils"
 	"encoding/xml"
 	"fmt"
-	"os"
 	"testing"
+
+	"github.com/fnxpt/cyclonedx-merge/utils"
 
 	"github.com/CycloneDX/cyclonedx-go"
 	"github.com/stretchr/testify/assert"
@@ -174,9 +174,6 @@ func TestMergeTwoSBOM(t *testing.T) {
 	sbom := utils.NewBOM()
 	MergeSBOM(sbom, &firstObject)
 	MergeSBOM(sbom, &secondObject)
-
-	encoder := cyclonedx.NewBOMEncoder(os.Stdout, cyclonedx.BOMFileFormatJSON)
-	encoder.Encode(sbom)
 
 	assert.NotNil(t, sbom)
 	assert.Equal(t, "root", sbom.Metadata.Component.BOMRef)

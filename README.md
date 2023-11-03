@@ -1,5 +1,5 @@
 # cyclonedx-merge
-Tool to merge cyclonedx files
+Tool to merge cyclonedx files (json/xml)
 
 ## Install
 
