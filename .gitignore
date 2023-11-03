@@ -22,3 +22,8 @@ go.work
 
 #binary
 cyclonedx-merge
+
+
+sbom/
+bom.json
+

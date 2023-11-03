@@ -3,6 +3,7 @@ package main
 import (
 	"cyclonedx-merge/flatmerge"
 	"cyclonedx-merge/merge"
+	"cyclonedx-merge/utils"
 	"flag"
 	"fmt"
 	"io"
@@ -22,7 +23,7 @@ const (
 
 var version = "0.0.2"
 
-var sbom *cyclonedx.BOM = merge.NewBOM()
+var sbom *cyclonedx.BOM = utils.NewBOM()
 var mode = MergeModeNormal
 var outputFormat = cyclonedx.BOMFileFormatJSON
 var output = os.Stdout

@@ -38,7 +38,7 @@ package smartmerge
 // 		Annotations:     &[]cyclonedx.Annotation{},
 // 	}
 
-// 	sbom := NewBOM()
+// 	sbom := utils.NewBOM()
 // 	MergeSBOM(sbom, &firstObject)
 
 // 	assert.NotNil(t, sbom)

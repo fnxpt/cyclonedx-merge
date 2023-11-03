@@ -1,6 +1,7 @@
 package flatmerge
 
 import (
+	"cyclonedx-merge/utils"
 	"encoding/xml"
 	"testing"
 
@@ -46,7 +47,7 @@ func TestMergeOneSBOM(t *testing.T) {
 		Annotations:     &[]cyclonedx.Annotation{},
 	}
 
-	sbom := NewBOM()
+	sbom := utils.NewBOM()
 	MergeSBOM(sbom, &firstObject)
 
 	assert.NotNil(t, sbom)
@@ -161,7 +162,7 @@ func TestMergeTwoSBOM(t *testing.T) {
 		Annotations:     &[]cyclonedx.Annotation{},
 	}
 
-	sbom := NewBOM()
+	sbom := utils.NewBOM()
 	MergeSBOM(sbom, &firstObject)
 	MergeSBOM(sbom, &secondObject)
 
