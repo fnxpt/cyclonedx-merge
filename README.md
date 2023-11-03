@@ -63,14 +63,3 @@ To be implemented
 ```
 docker run -v `pwd`/sbom/:/sbom/ fnxpt/cyclonedx-merge:latest --dir /sbom/ > output.json
 ```
-
-## TODO:
-
-- [x] Add tests
-- [x] Merge Annotations
-- [x] Merge Compositions
-- [x] Merge ExternalReferences
-- [x] Merge Properties
-- [x] Merge Services
-- [x] Make it generic
-- [ ] Clean code
