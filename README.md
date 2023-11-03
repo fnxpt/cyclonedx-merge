@@ -1,4 +1,5 @@
 # cyclonedx-merge
+![Coverage](https://img.shields.io/badge/Coverage-18.5%25-red)
 Tool to merge cyclonedx files (json/xml)
 
 ## Install
