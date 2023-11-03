@@ -1,6 +1,6 @@
 module github.com/fnxpt/cyclonedx-merge
 
-go 1.21.1
+go 1.21.2
 
 require (
 	github.com/CycloneDX/cyclonedx-go v0.7.2
