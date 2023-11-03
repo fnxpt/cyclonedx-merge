@@ -1,4 +1,4 @@
-module cyclonedx-merge
+module github.com/fnxpt/cyclonedx-merge
 
 go 1.21.1
 
