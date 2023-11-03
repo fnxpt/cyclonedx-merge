@@ -23,11 +23,40 @@ Usage:
     	merges file
   -format value
     	output format - json/xml (default: json)
-  -nested
-    	nested merge
+  -mode value
+    	merge mode - normal/flat/smart (default: normal)
   -output value
     	output file (default: stdout)
 ```
+
+## Modes
+
+### Normal
+
+This merge the sboms and keep the relationships, this may lead to wrong dependencies on the graph
+
+*Example*:
+
+* SBOM1 has libA that depends on libB:1.0
+* SBOM2 has libA that depends on libB:2.0
+
+Merged SBOM will have libA that dependes on libB:1.0 and libB:2.0
+
+### Flat
+
+This is merge the sboms and sets all relationships on the second level, this leads to a simplified version of the graph, losing most of the relationships
+
+*Example*:
+
+* SBOM1 has libA that depends on libB:1.0 that dependends on libC
+* SBOM2 has libA that depends on libB:2.0 that dependends on libC
+
+Merged SBOM will have libA that depends on libB:1.0 and libC in main component of SBOM1 and libA that depends on libB:2.0 and libC in main component of SBOM2
+
+### Smart
+
+To be implemented
+
 
 ## Run
 
@@ -37,11 +66,11 @@ docker run -v `pwd`/sbom/:/sbom/ fnxpt/cyclonedx-merge:latest --dir /sbom/ > out
 
 ## TODO:
 
-- [ ] Add tests
+- [x] Add tests
 - [x] Merge Annotations
 - [x] Merge Compositions
 - [x] Merge ExternalReferences
 - [x] Merge Properties
 - [x] Merge Services
-- [ ] Make it generic
+- [x] Make it generic
 - [ ] Clean code
