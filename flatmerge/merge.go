@@ -1,4 +1,4 @@
-package merge
+package flatmerge
 
 import (
 	"slices"
@@ -16,7 +16,8 @@ func MergeSBOM(b1 *cyclonedx.BOM, b2 *cyclonedx.BOM) {
 		if b2.Metadata.Component != nil {
 			topComponents := []cyclonedx.Component{*b2.Metadata.Component}
 			merge(b1.Components, &topComponents)
-			mergeDependencies(b1.Dependencies, &[]cyclonedx.Dependency{{Ref: "root", Dependencies: &[]string{b2.Metadata.Component.BOMRef}}})
+
+			mergeDependencies(b1.Dependencies, &[]cyclonedx.Component{*b2.Metadata.Component}, "root")
 
 			if b2.Metadata.Component.Components != nil {
 				merge(b1.Components, b2.Metadata.Component.Components)
@@ -31,7 +32,7 @@ func MergeSBOM(b1 *cyclonedx.BOM, b2 *cyclonedx.BOM) {
 	merge(b1.Properties, b2.Properties)
 	merge(b1.Annotations, b2.Annotations)
 
-	mergeDependencies(b1.Dependencies, b2.Dependencies)
+	mergeDependencies(b1.Dependencies, b2.Components, b2.Metadata.Component.BOMRef)
 }
 
 func NewBOM() *cyclonedx.BOM {
@@ -88,32 +89,23 @@ func merge[T comparableType](items *[]T, input *[]T) {
 	}
 }
 
-func mergeDependencies(d1 *[]cyclonedx.Dependency, d2 *[]cyclonedx.Dependency) {
+func mergeDependencies(d1 *[]cyclonedx.Dependency, d2 *[]cyclonedx.Component, key string) {
 	if d2 != nil {
-
-		var tmp = make(map[string]cyclonedx.Dependency)
+		tmp := make(map[string]cyclonedx.Dependency)
 
 		for _, item := range *d1 {
 			tmp[item.Ref] = item
 		}
 
-		for _, item := range *d2 {
-			key := item.Ref
+		if _, ok := tmp[key]; !ok || tmp[key].Dependencies == nil {
+			dependencies := []string{}
+			tmp[key] = cyclonedx.Dependency{Ref: key, Dependencies: &dependencies}
+		}
 
-			if _, ok := tmp[key]; ok {
-				if item.Dependencies != nil {
-					if tmp[key].Dependencies != nil {
-						for _, dependency := range *item.Dependencies {
-							if !slices.Contains(*tmp[key].Dependencies, dependency) {
-								*tmp[item.Ref].Dependencies = append(*tmp[item.Ref].Dependencies, dependency)
-							}
-						}
-					} else {
-						tmp[key] = item
-					}
-				}
-			} else {
-				tmp[item.Ref] = item
+		for _, item := range *d2 {
+
+			if !slices.Contains(*tmp[key].Dependencies, item.BOMRef) {
+				*tmp[key].Dependencies = append(*tmp[key].Dependencies, item.BOMRef)
 			}
 		}
 
@@ -122,7 +114,6 @@ func mergeDependencies(d1 *[]cyclonedx.Dependency, d2 *[]cyclonedx.Dependency) {
 			newDependencies = append(newDependencies, item)
 		}
 		*d1 = newDependencies
-
 	}
 }
 

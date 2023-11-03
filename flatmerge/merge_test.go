@@ -1,12 +1,10 @@
-package merge
+package flatmerge
 
 import (
 	"encoding/xml"
-	"fmt"
-	"os"
 	"testing"
 
-	"github.com/CycloneDX/cyclonedx-go"
+	cyclonedx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -38,10 +36,6 @@ func TestMergeOneSBOM(t *testing.T) {
 		ExternalReferences: &[]cyclonedx.ExternalReference{},
 		Dependencies: &[]cyclonedx.Dependency{
 			{
-				Ref:          "topLib:1.0",
-				Dependencies: &[]string{"libA:1.0"},
-			},
-			{
 				Ref:          "libA:1.0",
 				Dependencies: &[]string{"libB:2.0"},
 			},
@@ -71,15 +65,12 @@ func TestMergeOneSBOM(t *testing.T) {
 	assert.Equal(t, "libB", (*sbom.Components)[2].Name)
 	assert.Equal(t, "2.0", (*sbom.Components)[2].Version)
 
-	assert.Equal(t, 3, len(*sbom.Dependencies))
-	fmt.Println((*sbom.Dependencies)[0].Ref)
-	//TODO: SORTING
-	// assert.Equal(t, "libA:1.0", (*sbom.Dependencies)[0].Ref)
-	// assert.Equal(t, "libB:2.0", (*(*sbom.Dependencies)[0].Dependencies)[0])
-	// assert.Equal(t, "topLib:1.0", (*sbom.Dependencies)[1].Ref)
-	// assert.Equal(t, "libA:1.0", (*(*sbom.Dependencies)[1].Dependencies)[0])
-	// assert.Equal(t, "root", (*sbom.Dependencies)[2].Ref)
-	// assert.Equal(t, "topLib:1.0", (*(*sbom.Dependencies)[2].Dependencies)[0])
+	assert.Equal(t, 2, len(*sbom.Dependencies))
+	assert.Equal(t, "root", (*sbom.Dependencies)[0].Ref)
+	assert.Equal(t, "topLib:1.0", (*(*sbom.Dependencies)[0].Dependencies)[0])
+	assert.Equal(t, "topLib:1.0", (*sbom.Dependencies)[1].Ref)
+	assert.Equal(t, "libA:1.0", (*(*sbom.Dependencies)[1].Dependencies)[0])
+	assert.Equal(t, "libB:2.0", (*(*sbom.Dependencies)[1].Dependencies)[1])
 }
 
 func TestMergeTwoSBOM(t *testing.T) {
@@ -174,9 +165,6 @@ func TestMergeTwoSBOM(t *testing.T) {
 	MergeSBOM(sbom, &firstObject)
 	MergeSBOM(sbom, &secondObject)
 
-	encoder := cyclonedx.NewBOMEncoder(os.Stdout, cyclonedx.BOMFileFormatJSON)
-	encoder.Encode(sbom)
-
 	assert.NotNil(t, sbom)
 	assert.Equal(t, "root", sbom.Metadata.Component.BOMRef)
 	assert.Equal(t, "root", sbom.Metadata.Component.Name)
@@ -199,16 +187,15 @@ func TestMergeTwoSBOM(t *testing.T) {
 	assert.Equal(t, "libC", (*sbom.Components)[4].Name)
 	assert.Equal(t, "3.0", (*sbom.Components)[4].Version)
 
-	assert.Equal(t, 4, len(*sbom.Dependencies))
-	//TODO: SORTING
-	// assert.Equal(t, "root", (*sbom.Dependencies)[0].Ref)
-	// assert.Equal(t, "topLib:1.0", (*(*sbom.Dependencies)[0].Dependencies)[0])
-	// assert.Equal(t, "topLibB:2.0", (*(*sbom.Dependencies)[0].Dependencies)[1])
-	// assert.Equal(t, "topLib:1.0", (*sbom.Dependencies)[1].Ref)
-	// assert.Equal(t, "libA:1.0", (*(*sbom.Dependencies)[1].Dependencies)[0])
-	// assert.Equal(t, "libB:2.0", (*(*sbom.Dependencies)[1].Dependencies)[1])
-	// assert.Equal(t, "topLibB:2.0", (*sbom.Dependencies)[2].Ref)
-	// assert.Equal(t, "libA:1.0", (*(*sbom.Dependencies)[2].Dependencies)[0])
-	// assert.Equal(t, "libB:2.0", (*(*sbom.Dependencies)[2].Dependencies)[1])
-	// assert.Equal(t, "libC:3.0", (*(*sbom.Dependencies)[2].Dependencies)[2])
+	assert.Equal(t, 3, len(*sbom.Dependencies))
+	assert.Equal(t, "root", (*sbom.Dependencies)[0].Ref)
+	assert.Equal(t, "topLib:1.0", (*(*sbom.Dependencies)[0].Dependencies)[0])
+	assert.Equal(t, "topLibB:2.0", (*(*sbom.Dependencies)[0].Dependencies)[1])
+	assert.Equal(t, "topLib:1.0", (*sbom.Dependencies)[1].Ref)
+	assert.Equal(t, "libA:1.0", (*(*sbom.Dependencies)[1].Dependencies)[0])
+	assert.Equal(t, "libB:2.0", (*(*sbom.Dependencies)[1].Dependencies)[1])
+	assert.Equal(t, "topLibB:2.0", (*sbom.Dependencies)[2].Ref)
+	assert.Equal(t, "libA:1.0", (*(*sbom.Dependencies)[2].Dependencies)[0])
+	assert.Equal(t, "libB:2.0", (*(*sbom.Dependencies)[2].Dependencies)[1])
+	assert.Equal(t, "libC:3.0", (*(*sbom.Dependencies)[2].Dependencies)[2])
 }

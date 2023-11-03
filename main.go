@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cyclonedx-merge/flatmerge"
 	"cyclonedx-merge/merge"
 	"flag"
 	"fmt"
@@ -11,9 +12,18 @@ import (
 	"github.com/CycloneDX/cyclonedx-go"
 )
 
-var version = "0.0.1"
+type MergeMode int
+
+const (
+	MergeModeNormal MergeMode = iota
+	MergeModeFlat
+	MergeModeSmart
+)
+
+var version = "0.0.2"
 
 var sbom *cyclonedx.BOM = merge.NewBOM()
+var mode = MergeModeNormal
 var outputFormat = cyclonedx.BOMFileFormatJSON
 var output = os.Stdout
 
@@ -22,7 +32,7 @@ func main() {
 }
 
 func showHelpMenu() {
-	fmt.Println("usage: cyclonedx-merge [options]")
+	fmt.Printf("usage: cyclonedx-merge(%s) [options]\n", version)
 	fmt.Println("options:")
 	os.Exit(0)
 }
@@ -37,6 +47,20 @@ func parseArguments() {
 
 	flag.Func("file", "merges file", fileMerge)
 	flag.Func("dir", "merges files in directory", dirMerge)
+	flag.Func("mode", "merge mode - normal/flat/smart (default: normal)", func(value string) error {
+		switch value {
+		case "normal":
+			mode = MergeModeNormal
+		case "flat":
+			mode = MergeModeFlat
+		case "smart":
+			mode = MergeModeSmart
+		default:
+			return fmt.Errorf("invalid mode")
+		}
+		return nil
+	})
+
 	flag.Func("format", "output format - json/xml (default: json)", func(value string) error {
 		switch value {
 		case "json":
@@ -64,7 +88,6 @@ func parseArguments() {
 }
 
 func fileMerge(value string) error {
-	// fmt.Printf("Processing file %s\n", value)
 	if _, err := os.Stat(value); os.IsNotExist(err) {
 		fmt.Printf("file %s doesn't exist\n", value)
 		return err
@@ -84,7 +107,15 @@ func fileMerge(value string) error {
 		return err
 	}
 
-	merge.MergeSBOM(sbom, bom)
+	switch mode {
+	case MergeModeNormal:
+		merge.MergeSBOM(sbom, bom)
+	case MergeModeFlat:
+		flatmerge.MergeSBOM(sbom, bom)
+	case MergeModeSmart:
+		panic("not implemented yet")
+		// smartmerge.MergeSBOM(sbom, bom)
+	}
 
 	return nil
 }

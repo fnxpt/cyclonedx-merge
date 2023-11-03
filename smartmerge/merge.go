@@ -1,10 +1,15 @@
-package merge
+package smartmerge
 
 import (
+	"fmt"
+	"hash/fnv"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/CycloneDX/cyclonedx-go"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func MergeSBOM(b1 *cyclonedx.BOM, b2 *cyclonedx.BOM) {
@@ -31,7 +36,16 @@ func MergeSBOM(b1 *cyclonedx.BOM, b2 *cyclonedx.BOM) {
 	merge(b1.Properties, b2.Properties)
 	merge(b1.Annotations, b2.Annotations)
 
-	mergeDependencies(b1.Dependencies, b2.Dependencies)
+	missing := mergeDependencies(b1.Dependencies, b2.Dependencies)
+	if len(missing) > 0 {
+		for _, dep := range *b1.Dependencies {
+			if dep.Ref == b2.Metadata.Component.BOMRef {
+				*dep.Dependencies = append(*dep.Dependencies, missing...)
+				break
+			}
+		}
+	}
+
 }
 
 func NewBOM() *cyclonedx.BOM {
@@ -88,10 +102,11 @@ func merge[T comparableType](items *[]T, input *[]T) {
 	}
 }
 
-func mergeDependencies(d1 *[]cyclonedx.Dependency, d2 *[]cyclonedx.Dependency) {
-	if d2 != nil {
+func mergeDependencies(d1 *[]cyclonedx.Dependency, d2 *[]cyclonedx.Dependency) []string {
+	missingDependencies := make([]string, 0)
 
-		var tmp = make(map[string]cyclonedx.Dependency)
+	if d2 != nil {
+		tmp := make(map[string]cyclonedx.Dependency)
 
 		for _, item := range *d1 {
 			tmp[item.Ref] = item
@@ -103,14 +118,60 @@ func mergeDependencies(d1 *[]cyclonedx.Dependency, d2 *[]cyclonedx.Dependency) {
 			if _, ok := tmp[key]; ok {
 				if item.Dependencies != nil {
 					if tmp[key].Dependencies != nil {
-						for _, dependency := range *item.Dependencies {
-							if !slices.Contains(*tmp[key].Dependencies, dependency) {
-								*tmp[item.Ref].Dependencies = append(*tmp[item.Ref].Dependencies, dependency)
+						if item.Ref != "root" {
+
+							//CHECK IF THERE IS ANY KEY THAT HAS KEY+|
+							//IF KEY+| exists
+							//calculate KEY+| FOR ITEM :KEY2
+							//IF KEY2 doesnt exist
+							//ADD KEY2 AND KEY3 to TMP
+							//CREATE COMPONENT WITH KEY2
+							//ELSE
+							//check if tmp[key] dependencies and item.dependencies are the same
+							//if !equal
+							//calculate KEY+| FOR ITEM :KEY2
+							//calculate KEY+| FOR TMP[KEY] :KEY3
+							//ADD KEY2 AND KEY3 to TMP
+							//CREATE COMPONENT WITH KEY2
+							//CREATE COMPONENT WITH KEY3
+							//DELETE ORIGINAL COMPONENT
+
+							less := func(a, b string) bool { return a < b }
+							equalIgnoreOrder := cmp.Diff(tmp[key].Dependencies, item.Dependencies, cmpopts.SortSlices(less)) == ""
+							if !equalIgnoreOrder {
+
+								slices.Sort(*tmp[key].Dependencies)
+								slices.Sort(*item.Dependencies)
+
+								value1 := strings.Join(*tmp[key].Dependencies, "|")
+								value2 := strings.Join(*item.Dependencies, "|")
+
+								h1 := fnv.New32a()
+								h1.Write([]byte(value1))
+
+								h2 := fnv.New32a()
+								h2.Write([]byte(value2))
+
+								fmt.Printf("%s|%d != %s|%d\n", key, h1.Sum32(), key, h2.Sum32())
 							}
+						} else {
+							*tmp[item.Ref].Dependencies = append(*tmp[item.Ref].Dependencies, *item.Dependencies...)
 						}
-					} else {
-						tmp[key] = item
+
+						// for _, dependency := range *item.Dependencies {
+						// 	if !slices.Contains(*tmp[key].Dependencies, dependency) {
+
+						// 		tmp[fmt.Sprintf("%s|%s", key, dependency)] =
+						// 			fmt.Printf("WARN: %s doensn't have %s\n", item.Ref, dependency)
+						// 		missingDependencies = append(missingDependencies, dependency)
+						// 	} else {
+						// 		*tmp[item.Ref].Dependencies = append(*tmp[item.Ref].Dependencies, dependency)
+						// 	}
+
+						// }
 					}
+				} else {
+					tmp[key] = item
 				}
 			} else {
 				tmp[item.Ref] = item
@@ -124,6 +185,8 @@ func mergeDependencies(d1 *[]cyclonedx.Dependency, d2 *[]cyclonedx.Dependency) {
 		*d1 = newDependencies
 
 	}
+
+	return missingDependencies
 }
 
 func contains[T comparableType](items *[]T, input *T) bool {
