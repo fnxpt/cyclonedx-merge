@@ -17,16 +17,26 @@ docker run -v `pwd`/sbom/:/sbom/ fnxpt/cyclonedx-merge:latest --dir /sbom/ > out
 ## Usage
 ```
 Usage:
+  -bomref value
+        BOMRef of the merged parent component
   -dir value
-    	merges files in directory
+        merges files in directory
   -file value
-    	merges file
+        merges file
   -format value
-    	output format - json/xml (default: json)
+        output format - json/xml (default: json)
+  -group value
+        group of the merged parent component
   -mode value
-    	merge mode - normal/flat/smart (default: normal)
+        merge mode - normal/flat/smart (default: normal)
+  -name value
+        name of the merged parent component
   -output value
-    	output file (default: stdout)
+        output file (default: stdout)
+  -type value
+        type of the aggregator component
+  -version value
+        version of the merged parent component
 ```
 
 ## Modes
