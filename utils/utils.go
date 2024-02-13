@@ -14,16 +14,6 @@ import (
 
 func NewBOM(rootComponent *cyclonedx.Component) *cyclonedx.BOM {
 	sbom := cyclonedx.NewBOM()
-
-	root := rootComponent
-	if root == nil {
-		root = &cyclonedx.Component{
-			BOMRef: "root",
-			Name:   "root",
-			Type:   cyclonedx.ComponentTypeApplication,
-		}
-	}
-
 	sbom.Metadata = &cyclonedx.Metadata{
 		Tools: &[]cyclonedx.Tool{{
 			Vendor:  "fnxpt",
@@ -31,11 +21,11 @@ func NewBOM(rootComponent *cyclonedx.Component) *cyclonedx.BOM {
 			Version: "0.0.2",
 		}},
 		Timestamp: time.Now().Format(time.RFC3339),
-		Component: root,
+		Component: rootComponent,
 	}
 	sbom.Dependencies = &[]cyclonedx.Dependency{
 		{
-			Ref: root.BOMRef,
+			Ref: rootComponent.BOMRef,
 		},
 	}
 
