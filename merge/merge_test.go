@@ -53,7 +53,7 @@ func TestMergeOneSBOM(t *testing.T) {
 		Annotations:     &[]cyclonedx.Annotation{},
 	}
 
-	sbom := utils.NewBOM()
+	sbom := utils.NewBOM(nil)
 	MergeSBOM(sbom, &firstObject)
 
 	assert.NotNil(t, sbom)
@@ -171,7 +171,7 @@ func TestMergeTwoSBOM(t *testing.T) {
 		Annotations:     &[]cyclonedx.Annotation{},
 	}
 
-	sbom := utils.NewBOM()
+	sbom := utils.NewBOM(nil)
 	MergeSBOM(sbom, &firstObject)
 	MergeSBOM(sbom, &secondObject)
 

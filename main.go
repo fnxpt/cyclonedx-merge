@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -24,10 +25,24 @@ const (
 
 var version = "0.0.2"
 
-var sbom *cyclonedx.BOM = utils.NewBOM()
+var rootComponent *cyclonedx.Component
+var sbom *cyclonedx.BOM
 var mode = MergeModeNormal
 var outputFormat = cyclonedx.BOMFileFormatJSON
 var output = os.Stdout
+
+func initBaseComponent(value string) error {
+	baseComponentFile, err := os.Open(value)
+	if err != nil {
+		return err
+
+	}
+	defer baseComponentFile.Close()
+
+	jsonBytes, _ := io.ReadAll(baseComponentFile)
+	err = json.Unmarshal(jsonBytes, &rootComponent)
+	return err
+}
 
 func main() {
 	parseArguments()
@@ -47,8 +62,21 @@ func parseArguments() {
 		flag.PrintDefaults()
 	}
 
-	flag.Func("file", "merges file", fileMerge)
-	flag.Func("dir", "merges files in directory", dirMerge)
+	flag.Func("baseComponent", "file containing base component template "+
+		"(see cyclonedx.Component struct)", func(value string) error {
+		return initBaseComponent(value)
+	})
+
+	flag.Func("file", "merges file", func(value string) error {
+		sbom = utils.NewBOM(rootComponent)
+		return fileMerge(value)
+	})
+
+	flag.Func("dir", "merges files in directory", func(value string) error {
+		sbom = utils.NewBOM(rootComponent)
+		return dirMerge(value)
+	})
+
 	flag.Func("mode", "merge mode - normal/flat/smart (default: normal)", func(value string) error {
 		switch value {
 		case "normal":

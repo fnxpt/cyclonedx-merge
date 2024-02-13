@@ -12,8 +12,18 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
-func NewBOM() *cyclonedx.BOM {
+func NewBOM(rootComponent *cyclonedx.Component) *cyclonedx.BOM {
 	sbom := cyclonedx.NewBOM()
+
+	root := rootComponent
+	if root == nil {
+		root = &cyclonedx.Component{
+			BOMRef: "root",
+			Name:   "root",
+			Type:   cyclonedx.ComponentTypeApplication,
+		}
+	}
+
 	sbom.Metadata = &cyclonedx.Metadata{
 		Tools: &[]cyclonedx.Tool{{
 			Vendor:  "fnxpt",
@@ -21,15 +31,11 @@ func NewBOM() *cyclonedx.BOM {
 			Version: "0.0.2",
 		}},
 		Timestamp: time.Now().Format(time.RFC3339),
-		Component: &cyclonedx.Component{
-			BOMRef: "root",
-			Name:   "root",
-			Type:   cyclonedx.ComponentTypeApplication,
-		},
+		Component: root,
 	}
 	sbom.Dependencies = &[]cyclonedx.Dependency{
 		{
-			Ref: "root",
+			Ref: root.BOMRef,
 		},
 	}
 
