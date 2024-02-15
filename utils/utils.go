@@ -12,7 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
-func NewBOM() *cyclonedx.BOM {
+func NewBOM(rootComponent *cyclonedx.Component) *cyclonedx.BOM {
 	sbom := cyclonedx.NewBOM()
 	sbom.Metadata = &cyclonedx.Metadata{
 		Tools: &[]cyclonedx.Tool{{
@@ -21,15 +21,11 @@ func NewBOM() *cyclonedx.BOM {
 			Version: "0.0.2",
 		}},
 		Timestamp: time.Now().Format(time.RFC3339),
-		Component: &cyclonedx.Component{
-			BOMRef: "root",
-			Name:   "root",
-			Type:   cyclonedx.ComponentTypeApplication,
-		},
+		Component: rootComponent,
 	}
 	sbom.Dependencies = &[]cyclonedx.Dependency{
 		{
-			Ref: "root",
+			Ref: rootComponent.BOMRef,
 		},
 	}
 

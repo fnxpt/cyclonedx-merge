@@ -27,3 +27,4 @@ cyclonedx-merge
 sbom/
 bom.json
 
+.idea

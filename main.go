@@ -24,7 +24,13 @@ const (
 
 var version = "0.0.2"
 
-var sbom *cyclonedx.BOM = utils.NewBOM()
+var rootComponent = &cyclonedx.Component{
+	BOMRef: "root",
+	Name:   "root",
+	Type:   cyclonedx.ComponentTypeApplication,
+}
+
+var sbom *cyclonedx.BOM
 var mode = MergeModeNormal
 var outputFormat = cyclonedx.BOMFileFormatJSON
 var output = os.Stdout
@@ -47,8 +53,41 @@ func parseArguments() {
 		flag.PrintDefaults()
 	}
 
-	flag.Func("file", "merges file", fileMerge)
-	flag.Func("dir", "merges files in directory", dirMerge)
+	flag.Func("group", "group of the merged parent component", func(value string) error {
+		rootComponent.Group = value
+		return nil
+	})
+
+	flag.Func("name", "name of the merged parent component", func(value string) error {
+		rootComponent.Name = value
+		return nil
+	})
+
+	flag.Func("version", "version of the merged parent component", func(value string) error {
+		rootComponent.Version = value
+		return nil
+	})
+
+	flag.Func("bomref", "BOMRef of the merged parent component", func(value string) error {
+		rootComponent.BOMRef = value
+		return nil
+	})
+
+	flag.Func("type", "type of the aggregator component", func(value string) error {
+		rootComponent.Type = cyclonedx.ComponentType(value)
+		return nil
+	})
+
+	flag.Func("file", "merges file", func(value string) error {
+		sbom = utils.NewBOM(rootComponent)
+		return fileMerge(value)
+	})
+
+	flag.Func("dir", "merges files in directory", func(value string) error {
+		sbom = utils.NewBOM(rootComponent)
+		return dirMerge(value)
+	})
+
 	flag.Func("mode", "merge mode - normal/flat/smart (default: normal)", func(value string) error {
 		switch value {
 		case "normal":

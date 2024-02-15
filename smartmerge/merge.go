@@ -15,7 +15,7 @@ func MergeSBOM(b1 *cyclonedx.BOM, b2 *cyclonedx.BOM) {
 		if b2.Metadata.Component != nil {
 			topComponents := []cyclonedx.Component{*b2.Metadata.Component}
 			utils.Merge(b1.Components, &topComponents)
-			utils.MergeDependenciesMissing(b1.Dependencies, &[]cyclonedx.Dependency{{Ref: "root", Dependencies: &[]string{b2.Metadata.Component.BOMRef}}})
+			utils.MergeDependenciesMissing(b1.Dependencies, &[]cyclonedx.Dependency{{Ref: b1.Metadata.Component.BOMRef, Dependencies: &[]string{b2.Metadata.Component.BOMRef}}})
 
 			if b2.Metadata.Component.Components != nil {
 				utils.Merge(b1.Components, b2.Metadata.Component.Components)
