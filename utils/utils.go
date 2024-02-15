@@ -18,7 +18,7 @@ func NewBOM(rootComponent *cyclonedx.Component) *cyclonedx.BOM {
 		Tools: &[]cyclonedx.Tool{{
 			Vendor:  "fnxpt",
 			Name:    "cyclonedx-merge",
-			Version: "0.0.2",
+			Version: "0.0.3",
 		}},
 		Timestamp: time.Now().Format(time.RFC3339),
 		Component: rootComponent,
