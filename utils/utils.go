@@ -21,7 +21,7 @@ func NewBOM(rootComponent *cyclonedx.Component) *cyclonedx.BOM {
 				{
 					Type:    "application",
 					Name:    "cyclonedx-merge",
-					Version: "0.0.6",
+					Version: "0.0.7",
 				},
 			},
 		},

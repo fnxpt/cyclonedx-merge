@@ -22,7 +22,7 @@ const (
 	MergeModeSmart
 )
 
-var version = "0.0.6"
+var version = "0.0.7"
 
 var rootComponent = &cyclonedx.Component{
 	BOMRef: "root",
@@ -36,6 +36,7 @@ var outputFormat = cyclonedx.BOMFileFormatJSON
 var output = os.Stdout
 
 func main() {
+	sbom = utils.NewBOM(rootComponent)
 	parseArguments()
 }
 
@@ -79,12 +80,10 @@ func parseArguments() {
 	})
 
 	flag.Func("file", "merges file", func(value string) error {
-		sbom = utils.NewBOM(rootComponent)
 		return fileMerge(value)
 	})
 
 	flag.Func("dir", "merges files in directory", func(value string) error {
-		sbom = utils.NewBOM(rootComponent)
 		return dirMerge(value)
 	})
 
