@@ -14,14 +14,14 @@ import (
 
 func NewBOM(rootComponent *cyclonedx.Component) *cyclonedx.BOM {
 	sbom := cyclonedx.NewBOM()
-	sbom.SpecVersion = cyclonedx.SpecVersion1_5
+	sbom.SpecVersion = cyclonedx.SpecVersion1_6
 	sbom.Metadata = &cyclonedx.Metadata{
 		Tools: &cyclonedx.ToolsChoice{
 			Components: &[]cyclonedx.Component{
 				{
 					Type:    "application",
 					Name:    "cyclonedx-merge",
-					Version: "0.0.7",
+					Version: "0.0.9",
 				},
 			},
 		},

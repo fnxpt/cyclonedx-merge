@@ -22,7 +22,7 @@ const (
 	MergeModeSmart
 )
 
-var version = "0.0.7"
+var version = "0.0.9"
 
 var rootComponent = &cyclonedx.Component{
 	BOMRef: "root",
